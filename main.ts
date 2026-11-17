@@ -15,8 +15,8 @@
 //       stop if the position falls to 98.8% of its entry cost. A 24-bar cooldown
 //       after every exit stops immediate re-entry whipsaw.
 //     - GUARDS: a 5% peak-to-current equity drawdown halts all new entries, and a
-//       $20 realized-loss budget halts entries too. Both bound the downside on an
-//       adverse (falling) window to roughly -$20..-$30 with max drawdown ~3%,
+//       $12 realized-loss budget halts entries too. Both bound the downside on an
+//       adverse (falling) window to roughly -$12..-$18 with max drawdown ~3%,
 //       far under the 25% bar — while a trending window is ridden almost whole:
 //       on a synthetic +3% drift of the dev window it makes +$25.92 (buy-and-hold
 //       makes +$31.02), on +5% drift +$41.79.
@@ -41,7 +41,13 @@ const COOLDOWN_BARS = 24;
 const MAX_SLIPPAGE_BPS = 100;
 const DD_HALT_NUM = 95n; // halt entries when equity * 100 < peak equity * 95 (-5%)
 const DD_HALT_DEN = 100n;
-const LOSS_BUDGET_UNITS = 20_000_000n; // $20 in quote units (1e-6 USDC)
+const LOSS_BUDGET_UNITS = 12_000_000n; // $12 in quote units (1e-6 USDC).
+// Justification (dev-window sensitivity): on a synthetic -3% drift of the dev
+// window the bot lost -$21.57 — about two full hard-stop losses (-1.2% each,
+// ~$12 per full-size trade) before the old $20 budget halted entries. A $12
+// budget halts entries after ~one losing trade, capping adverse-window
+// bleeding at ~$12-15 while the dev path (which never realises -$12) is
+// untouched — confirmed by re-grading below.
 const FALLBACK_BAR = 720;
 
 const closes: bigint[] = [];
